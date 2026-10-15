@@ -1,0 +1,16 @@
+{
+  "name": "nord-clean",
+  "version": "1.0.0",
+  "description": "Nord Clean demo site",
+  "scripts": {
+    "vendor": "node -e \"const f=require('fs');f.copyFileSync('node_modules/animejs/dist/bundles/anime.umd.min.js','vendor/anime.umd.min.js');f.copyFileSync('node_modules/motion/dist/motion.js','vendor/motion.js')\"",
+    "test": "node price.test.js"
+  },
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "animejs": "^4.5.0",
+    "motion": "^14.2.0"
+  },
+  "private": true
+}

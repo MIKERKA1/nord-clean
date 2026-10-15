@@ -1,0 +1,53 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-15T18:12:08.191Z",
+        "reason": "user brief: warm milky/stone background requested in original spec"
+      },
+      {
+        "rule": "all-caps-body",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-15T18:12:08.582Z",
+        "reason": "agent: only short eyebrow labels (<=34 chars), no uppercase paragraphs"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-15T18:12:08.721Z",
+        "reason": "agent: false positive, sections inset content via .wrap margins; .order-card has 22-40px padding"
+      },
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-15T18:12:08.884Z",
+        "reason": "agent: body overflow-x:clip intentional against horizontal scroll; no popovers"
+      },
+      {
+        "rule": "gray-on-color",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-15T18:12:19.542Z",
+        "reason": "agent: #a9bdb2 (~6:1) and #c7d6cd (~9:1) on #123a2e pass WCAG AA; tinted, not neutral gray"
+      }
+    ]
+  }
+}

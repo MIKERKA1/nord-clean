@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nord Clean · уборка квартир и домов, химчистка мебели и ковров</title>
+<meta name="description" content="Демо-сайт клининговой компании: поддерживающая и генеральная уборка, уборка после ремонта, мытьё окон, химчистка мебели и ковров. Ориентировочная цена онлайн за минуту.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nord Clean · дом снова дышит">
+<meta property="og:description" content="Уборка, химчистка и уборка после ремонта. Посчитайте ориентировочную стоимость онлайн. Демонстрационный проект.">
+<meta name="theme-color" content="#F2EEE6">
+<script>try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="vendor/anime.umd.min.js" defer></script>
+<script src="vendor/motion.js" defer></script>
+<script src="data.js" defer></script>
+<script src="price.js" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+
+<!-- Графика: ковёр, ткань, плитка и «грязь» — векторные, переиспользуются через <use> -->
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="noise" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="2"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.2 1"/></filter>
+    <filter id="dust" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".55" numOctaves="2" seed="9"/><feColorMatrix values="0 0 0 0 .27  0 0 0 0 .2  0 0 0 0 .12  0 0 0 -3 1.75"/></filter>
+    <filter id="ragged" x="-50%" y="-50%" width="200%" height="200%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="3" seed="7" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="45" xChannelSelector="R" yChannelSelector="G"/></filter>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="28"/></filter>
+    <radialGradient id="gStain"><stop offset="0" stop-color="#4A3420" stop-opacity=".75"/><stop offset=".7" stop-color="#5A4128" stop-opacity=".45"/><stop offset="1" stop-color="#5A4128" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gGrease" cx=".82" cy=".15" r=".8"><stop offset="0" stop-color="#9C7424" stop-opacity=".6"/><stop offset="1" stop-color="#9C7424" stop-opacity="0"/></radialGradient>
+    <linearGradient id="gCush" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".14"/><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
+    <linearGradient id="gSheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".06"/></linearGradient>
+
+    <pattern id="pDia" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="#123A2E"/><path d="M18 4 32 18 18 32 4 18Z" fill="#E9DEC6"/><path d="M18 11 25 18 18 25 11 18Z" fill="#B5573A"/></pattern>
+    <pattern id="pField" width="60" height="60" patternUnits="userSpaceOnUse"><rect width="60" height="60" fill="#EDE3CD"/><path d="M0 30 30 0 60 30 30 60Z" fill="none" stroke="#D6C8A8" stroke-width="2"/><circle cx="30" cy="30" r="3" fill="#123A2E" opacity=".45"/></pattern>
+    <pattern id="pFringe" width="8" height="10" patternUnits="userSpaceOnUse"><rect x="2" width="3" height="10" fill="#E6D9BC"/></pattern>
+    <pattern id="pWeave" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#2E5A4B"/><rect width="6" height="3" fill="#356755"/><rect width="3" height="6" fill="#28503F" opacity=".6"/></pattern>
+    <pattern id="pTile" width="100" height="50" patternUnits="userSpaceOnUse"><rect width="100" height="50" fill="#D9D3C6"/><rect x="3" y="3" width="94" height="44" rx="2" fill="#F7F4EE"/><path d="M10 9H58" stroke="#fff" stroke-width="3"/></pattern>
+    <pattern id="pGrout" width="100" height="50" patternUnits="userSpaceOnUse"><path d="M0 0H100M0 50H100M0 0V50M100 0V50" stroke="#5E4B30" stroke-width="7" fill="none"/></pattern>
+  </defs>
+
+  <symbol id="rug" viewBox="0 0 1000 600">
+    <rect x="0" y="24" width="40" height="552" fill="url(#pFringe)"/>
+    <rect x="960" y="24" width="40" height="552" fill="url(#pFringe)"/>
+    <rect x="40" width="920" height="600" fill="#B5573A"/>
+    <rect x="62" y="22" width="876" height="556" fill="url(#pDia)"/>
+    <rect x="98" y="58" width="804" height="484" fill="#123A2E"/>
+    <rect x="110" y="70" width="780" height="460" fill="url(#pField)"/>
+    <path d="M110 70H250L110 190ZM890 70H750L890 190ZM110 530H250L110 410ZM890 530H750L890 410Z" fill="#123A2E"/>
+    <path d="M110 70H200L110 147ZM890 70H800L890 147ZM110 530H200L110 453ZM890 530H800L890 453Z" fill="#B5573A"/>
+    <path d="M500 110 720 300 500 490 280 300Z" fill="#123A2E"/>
+    <path d="M500 150 674 300 500 450 326 300Z" fill="#B5573A"/>
+    <path d="M500 190 628 300 500 410 372 300Z" fill="#EDE3CD"/>
+    <path d="M500 232 578 300 500 368 422 300Z" fill="#123A2E"/>
+    <path d="M500 270 535 300 500 330 465 300Z" fill="#C9F26B"/>
+    <path d="M190 240 240 300 190 360 140 300ZM810 240 860 300 810 360 760 300Z" fill="#B5573A"/>
+    <path d="M190 272 214 300 190 328 166 300ZM810 272 834 300 810 328 786 300Z" fill="#C9F26B"/>
+    <rect x="40" width="920" height="600" filter="url(#noise)" opacity=".2"/>
+  </symbol>
+
+  <symbol id="grime" viewBox="0 0 1000 600">
+    <rect x="40" width="920" height="600" fill="#6B5233" opacity=".24"/>
+    <path d="M40 480C300 430 520 340 960 250" stroke="#3E2E1C" stroke-width="150" fill="none" opacity=".3" filter="url(#blur)"/>
+    <g filter="url(#ragged)" fill="url(#gStain)">
+      <ellipse cx="300" cy="200" rx="72" ry="50"/><ellipse cx="640" cy="420" rx="92" ry="56"/>
+      <ellipse cx="820" cy="150" rx="42" ry="30"/><ellipse cx="180" cy="470" rx="52" ry="36"/>
+    </g>
+    <ellipse cx="560" cy="170" rx="40" ry="34" fill="none" stroke="#3F2E1A" stroke-width="7" opacity=".4" filter="url(#ragged)"/>
+    <rect x="40" width="920" height="600" filter="url(#dust)" opacity=".75"/>
+    <g fill="#2E2318" opacity=".55"><circle cx="420" cy="380" r="4"/><circle cx="436" cy="372" r="3"/><circle cx="702" cy="248" r="4"/><circle cx="246" cy="318" r="3"/><circle cx="866" cy="480" r="4"/></g>
+    <g stroke="#2B2118" stroke-width="1.6" fill="none" opacity=".5"><path d="M350 300q30-20 60 4"/><path d="M720 120q18 26 46 20"/><path d="M150 140q24 8 30 36"/></g>
+  </symbol>
+
+  <symbol id="sofa" viewBox="0 0 600 400">
+    <rect width="600" height="400" fill="url(#pWeave)"/>
+    <rect width="300" height="400" fill="url(#gCush)"/><rect x="300" width="300" height="400" fill="url(#gCush)"/>
+    <path d="M300 0V400" stroke="#163A2F" stroke-width="6"/><path d="M0 332H600" stroke="#1B4236" stroke-width="3" opacity=".7"/>
+    <rect width="600" height="400" filter="url(#noise)" opacity=".15"/>
+  </symbol>
+  <symbol id="sofa-dirt" viewBox="0 0 600 400">
+    <rect width="600" height="400" fill="#5C4A2E" opacity=".3"/>
+    <ellipse cx="300" cy="250" rx="320" ry="90" fill="#2B2015" opacity=".32" filter="url(#blur)"/>
+    <ellipse cx="170" cy="190" rx="72" ry="50" fill="url(#gStain)" filter="url(#ragged)"/>
+    <ellipse cx="430" cy="120" rx="34" ry="30" fill="none" stroke="#3F2E1A" stroke-width="6" opacity=".5" filter="url(#ragged)"/>
+    <rect width="600" height="400" filter="url(#dust)" opacity=".8"/>
+  </symbol>
+
+  <symbol id="tile" viewBox="0 0 600 400">
+    <rect width="600" height="400" fill="url(#pTile)"/><rect width="600" height="400" fill="url(#gSheen)"/>
+  </symbol>
+  <symbol id="tile-dirt" viewBox="0 0 600 400">
+    <rect width="600" height="400" fill="url(#pGrout)" opacity=".55"/>
+    <rect width="600" height="400" fill="url(#gGrease)"/>
+    <g fill="#7A5A22" opacity=".5" filter="url(#ragged)"><circle cx="470" cy="90" r="9"/><circle cx="420" cy="140" r="6"/><circle cx="520" cy="170" r="11"/><circle cx="380" cy="70" r="5"/><circle cx="300" cy="120" r="7"/></g>
+    <rect width="600" height="400" filter="url(#dust)" opacity=".5"/>
+  </symbol>
+</svg>
+
+<a class="skip" href="#main">Перейти к содержанию</a>
+
+<header class="hdr">
+  <div class="wrap hdr-in">
+    <a class="logo" href="#top" aria-label="Nord Clean, в начало страницы"><span class="logo-mark" aria-hidden="true"></span>nord<span>clean</span></a>
+    <nav class="nav" id="nav" aria-label="Основная навигация">
+      <a href="#services">Услуги</a>
+      <a href="#calc">Цены</a>
+      <a href="#results">До и после</a>
+      <a href="#process">Как работаем</a>
+      <a href="#faq">Вопросы</a>
+      <a href="#contacts">Контакты</a>
+      <a class="btn btn-lime nav-cta" href="#calc">Рассчитать стоимость</a>
+    </nav>
+    <a class="btn btn-ink hdr-cta" href="#calc">Рассчитать</a>
+    <button class="theme-btn" type="button" aria-pressed="false" aria-label="Включить тёмную тему">
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <button class="burger" type="button" aria-expanded="false" aria-controls="nav" aria-label="Открыть меню"><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero" id="top" aria-labelledby="h1">
+  <div class="wrap hero-top">
+    <p class="eyebrow">Уборка · химчистка · после ремонта</p>
+    <h1 id="h1">Дом снова <em>дышит.</em></h1>
+    <div class="hero-side">
+      <p class="lead">Убираем квартиры и дома, чистим диваны, матрасы и ковры, разбираемся со строительной пылью после ремонта. Цену видно заранее: посчитайте за минуту.</p>
+      <div class="actions">
+        <a class="btn btn-lime" href="#calc">Рассчитать стоимость</a>
+        <a class="btn btn-line" href="#services">Выбрать услугу</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="floor">
+      <div class="rug-box">
+        <div class="rug-wrap">
+          <div class="rug rug-clean"><svg viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true"><use href="#rug" width="1000" height="600"/></svg></div>
+          <div class="rug rug-dirty">
+            <svg class="soiled" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true"><use href="#rug" width="1000" height="600"/></svg>
+            <svg viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true"><use href="#grime" width="1000" height="600"/></svg>
+          </div>
+        </div>
+        <div class="roll" aria-hidden="true"></div>
+        <div class="wand" aria-hidden="true"><span class="wand-grip"></span></div>
+      </div>
+    </div>
+  </div>
+  <ol class="wrap story" aria-label="Что происходит с ковром">
+    <li aria-current="step">Разворачиваем ковёр</li>
+    <li>Видно, что накопилось</li>
+    <li>Чистим проход за проходом</li>
+    <li>Ковёр снова дышит</li>
+  </ol>
+  <div class="wrap stage-bar">
+    <label class="stage-label" for="clean-range">Нажмите на ковёр и ведите насадку или двигайте ползунок стрелками</label>
+    <div class="stage-ctrl">
+      <input id="clean-range" type="range" min="0" max="100" value="0">
+      <output for="clean-range" id="clean-out">0%</output>
+      <button class="link-btn" type="button" data-clean-all>Почистить целиком</button>
+    </div>
+  </div>
+  <ul class="wrap hero-facts" aria-label="Коротко о сервисе">
+    <li>Цена известна до выезда</li>
+    <li>Свои средства и инвентарь</li>
+    <li>Можно заказать одну услугу</li>
+  </ul>
+</section>
+
+<section class="sec why" aria-labelledby="why-h">
+  <div class="wrap why-grid">
+    <div class="why-head">
+      <p class="eyebrow">Почему с нами проще</p>
+      <h2 id="why-h">Без сюрпризов в чеке и без лишних хлопот.</h2>
+    </div>
+    <ol class="why-list">
+      <li><h3>Цена до выезда</h3><p>Калькулятор показывает ориентир. Точную сумму называем после пары уточняющих вопросов и не меняем её на месте без вашего согласия.</p></li>
+      <li><h3>Бережно к вещам</h3><p>Средство подбираем под материал и сначала пробуем на незаметном участке. Дерево и камень агрессивной химией не трогаем.</p></li>
+      <li><h3>Ровно то, что нужно</h3><p>Полный комплекс или одна задача: только окна, только диван, только кухня. Лишнего не навязываем.</p></li>
+      <li><h3>Всё привозим сами</h3><p>Пылесосы, экстрактор для химчистки, стремянку, салфетки и средства. Покупать ничего не придётся.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="sec services" id="services" aria-labelledby="svc-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Услуги</p>
+      <h2 id="svc-h">С чем помочь?</h2>
+      <p class="sec-sub">Выберите задачу, и мы покажем, что входит, кому подходит и сколько примерно стоит.</p>
+    </div>
+    <div class="svc" id="svc">
+      <ul class="svc-list" id="svc-list"></ul>
+      <div class="svc-panel" id="svc-panel" tabindex="-1"></div>
+    </div>
+    <noscript><p>Для выбора услуги и расчёта стоимости включите JavaScript.</p></noscript>
+  </div>
+</section>
+
+<section class="sec calc-sec" id="calc" aria-labelledby="calc-h">
+  <div class="wrap calc-grid">
+    <div class="calc-intro">
+      <p class="eyebrow">Цены</p>
+      <h2 id="calc-h">Сколько это стоит</h2>
+      <p class="sec-sub">Заполните три поля, и сразу появится ориентировочная сумма. Цены демонстрационные, итог уточняется перед выездом.</p>
+    </div>
+    <form class="calc" id="calcForm" novalidate>
+      <div class="field">
+        <label for="c-service">Что нужно сделать</label>
+        <select id="c-service" name="service"></select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="c-qty" id="c-qty-label">Площадь, м²</label>
+          <input id="c-qty" name="qty" type="number" inputmode="numeric" step="1" aria-describedby="c-qty-hint c-qty-err">
+          <p class="hint" id="c-qty-hint"></p>
+          <p class="err" id="c-qty-err"></p>
+        </div>
+        <div class="field" id="c-rooms-f">
+          <label for="c-rooms">Комнат</label>
+          <input id="c-rooms" name="rooms" type="number" inputmode="numeric" min="1" max="10" step="1" value="2" aria-describedby="c-rooms-err">
+          <p class="hint">от 1 до 10</p>
+          <p class="err" id="c-rooms-err"></p>
+        </div>
+      </div>
+      <fieldset class="field extras">
+        <legend>Добавить к заказу <span class="hint">(по желанию)</span></legend>
+        <div id="c-extras"></div>
+      </fieldset>
+    </form>
+    <aside class="receipt" aria-labelledby="rcpt-h">
+      <p class="rcpt-h" id="rcpt-h">Ориентировочно</p>
+      <p class="sum" id="sum"><span class="visually-hidden" id="sum-text" aria-live="polite">—</span><span class="sum-vis" aria-hidden="true">—</span></p>
+      <p class="sum-range" id="sum-range"></p>
+      <ul class="breakdown" id="breakdown"></ul>
+      <p class="rcpt-note">Итог может измениться, если загрязнение сильнее обычного, есть труднодоступные места или нужна срочная уборка. Об этом скажем до выезда.</p>
+      <button class="btn btn-lime btn-wide" type="button" id="toOrder" data-order="support">Оставить заявку с этим расчётом</button>
+    </aside>
+  </div>
+</section>
+
+<section class="sec results" id="results" aria-labelledby="res-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">До и после</p>
+      <h2 id="res-h">Разница, которую видно</h2>
+      <p class="sec-sub">Двигайте разделитель мышью, пальцем или стрелками. Это нарисованные иллюстрации для демонстрации, а не фото реальных заказов.</p>
+    </div>
+    <div class="cmp-grid">
+      <figure class="cmp cmp-big" style="--p:50%">
+        <div class="cmp-view">
+          <svg class="cmp-art" viewBox="300 160 400 267" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#rug" width="1000" height="600"/></svg>
+          <div class="cmp-before">
+            <svg class="cmp-art soiled" viewBox="300 160 400 267" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#rug" width="1000" height="600"/></svg>
+            <svg class="cmp-art" viewBox="300 160 400 267" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#grime" width="1000" height="600"/></svg>
+          </div>
+          <input class="cmp-range" type="range" min="0" max="100" value="50" aria-label="Ковёр: положение разделителя «до» и «после»">
+          <span class="cmp-handle" aria-hidden="true"></span>
+          <span class="cmp-tag cmp-tag-b">До</span><span class="cmp-tag cmp-tag-a">После</span>
+        </div>
+        <figcaption><b>Ковёр в гостиной.</b> Пятна, пыль в ворсе и протоптанная дорожка от двери к дивану.</figcaption>
+      </figure>
+      <figure class="cmp" style="--p:50%">
+        <div class="cmp-view">
+          <svg class="cmp-art" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#sofa" width="600" height="400"/></svg>
+          <div class="cmp-before"><svg class="cmp-art" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#sofa" width="600" height="400"/><use href="#sofa-dirt" width="600" height="400"/></svg></div>
+          <input class="cmp-range" type="range" min="0" max="100" value="50" aria-label="Диван: положение разделителя «до» и «после»">
+          <span class="cmp-handle" aria-hidden="true"></span>
+          <span class="cmp-tag cmp-tag-b">До</span><span class="cmp-tag cmp-tag-a">После</span>
+        </div>
+        <figcaption><b>Обивка дивана.</b> Пятно от кофе и потёртая зона, где чаще всего сидят.</figcaption>
+      </figure>
+      <figure class="cmp" style="--p:50%">
+        <div class="cmp-view">
+          <svg class="cmp-art" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#tile" width="600" height="400"/></svg>
+          <div class="cmp-before"><svg class="cmp-art" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#tile" width="600" height="400"/><use href="#tile-dirt" width="600" height="400"/></svg></div>
+          <input class="cmp-range" type="range" min="0" max="100" value="50" aria-label="Кухонный фартук: положение разделителя «до» и «после»">
+          <span class="cmp-handle" aria-hidden="true"></span>
+          <span class="cmp-tag cmp-tag-b">До</span><span class="cmp-tag cmp-tag-a">После</span>
+        </div>
+        <figcaption><b>Кухонный фартук.</b> Жир у плиты и потемневшие швы между плиткой.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="sec process" id="process" aria-labelledby="proc-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Как проходит заказ</p>
+      <h2 id="proc-h">Шесть шагов до чистого дома</h2>
+    </div>
+    <ol class="steps">
+      <li><h3>Выбираете услугу</h3><p>И сразу видите ориентировочную цену в калькуляторе.</p></li>
+      <li><h3>Оставляете заявку</h3><p>Нужны только имя и контакт.</p></li>
+      <li><h3>Уточняем детали</h3><p>Задаём пару вопросов. Можно прислать фото, так оценка точнее.</p></li>
+      <li><h3>Фиксируем цену</h3><p>Называем итоговую сумму и время до выезда. На месте она не растёт.</p></li>
+      <li><h3>Убираем</h3><p>Приезжаем в согласованное время со своим инвентарём.</p></li>
+      <li><h3>Принимаете работу</h3><p>Проходим по помещению вместе. Замечания исправляем сразу, оплата после.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="sec honest" aria-labelledby="hon-h">
+  <div class="wrap honest-grid">
+    <div>
+      <p class="eyebrow">Честно о главном</p>
+      <h2 id="hon-h">Ответы до того, как вы спросите</h2>
+      <dl class="qa">
+        <div><dt>Нужно ли покупать средства и инвентарь?</dt><dd>Нет, всё привозим. Если у вас аллергия или любимое средство, скажите, и будем работать вашим.</dd></div>
+        <div><dt>Как заранее узнать цену?</dt><dd>Калькулятор даёт ориентир, а точную сумму называем после уточнения деталей, ещё до выезда.</dd></div>
+        <div><dt>Можно заказать только одну услугу?</dt><dd>Да. Например, только окна или только химчистку дивана.</dd></div>
+        <div><dt>Как выбрать время?</dt><dd>Напишите удобный день в комментарии к заявке. Мы подтвердим его или предложим ближайший свободный.</dd></div>
+        <div><dt>Можно уточнить объём работ до заказа?</dt><dd>Конечно. Опишите задачу или пришлите фото, и мы скажем, что войдёт в уборку, а что нет.</dd></div>
+      </dl>
+    </div>
+    <aside class="checklist" aria-labelledby="chk-h">
+      <h3 id="chk-h">Вместо отзывов: как выбрать клининг</h3>
+      <p>Компания вымышленная, поэтому отзывов здесь нет. Зато эти вопросы стоит задать любому клинингу, необязательно нашему.</p>
+      <ul>
+        <li>Цену называют до выезда и фиксируют письменно?</li>
+        <li>Понятно, что входит в услугу, а что оплачивается отдельно?</li>
+        <li>Расскажут о составе средств, если дома дети или животные?</li>
+        <li>Есть приёмка работы вместе с исполнителем?</li>
+        <li>Оплата после уборки, а не вся сумма вперёд?</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<section class="sec faq" id="faq" aria-labelledby="faq-h">
+  <div class="wrap faq-grid">
+    <div>
+      <p class="eyebrow">Вопросы</p>
+      <h2 id="faq-h">Частые вопросы</h2>
+    </div>
+    <div class="faq-list">
+      <details><summary>Сколько длится уборка?</summary><p>Поддерживающая уборка двухкомнатной квартиры обычно занимает 3–4 часа, генеральная 6–8 часов. Уборка после ремонта может занять весь день. Точное время назовём при согласовании.</p></details>
+      <details><summary>Нужно ли быть дома во время уборки?</summary><p>Желательно в начале, чтобы показать фронт работ, и в конце, чтобы принять результат. В остальное время можно заниматься своими делами.</p></details>
+      <details><summary>Что подготовить перед приездом?</summary><p>Уберите ценные и хрупкие вещи, документы и то, что не нужно трогать. Нужен доступ к воде и электричеству, остальное привезём.</p></details>
+      <details><summary>Почему цена в калькуляторе ориентировочная?</summary><p>Одинаковые 50 м² бывают очень разными: где-то достаточно пройтись тряпкой, а где-то нужно отмывать известковый налёт. Поэтому финальную сумму называем после уточнения деталей, до выезда.</p></details>
+      <details><summary>Что если результат не понравится?</summary><p>Во время приёмки отмечаете замечания, и мы сразу исправляем их в том же заказе.</p></details>
+      <details><summary>Можно ли с домашними животными?</summary><p>Да. Предупредите заранее: подберём средства без резкого запаха и попросим на время уборки закрыть питомца в одной из комнат.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="sec order" id="order" aria-labelledby="ord-h">
+  <div class="wrap order-grid">
+    <div class="order-intro" id="contacts">
+      <p class="eyebrow">Заявка</p>
+      <h2 id="ord-h">Вернём дому свежесть</h2>
+      <p>Оставьте имя и контакт, и мы перезвоним, уточним детали и назовём точную цену. Или свяжитесь сами:</p>
+      <ul class="contacts">
+        <li><span>Телефон</span><a data-site="phone" href="#"></a></li>
+        <li><span>Почта</span><a data-site="email" href="#"></a></li>
+        <li><span>Работаем</span><b data-site="hours"></b></li>
+      </ul>
+      <p class="demo-note">Контакты условные: это демонстрационный проект.</p>
+    </div>
+
+    <div class="order-card">
+      <form id="orderForm" novalidate>
+        <div class="field">
+          <label for="o-name">Как к вам обращаться</label>
+          <input id="o-name" name="name" type="text" autocomplete="name" maxlength="60" aria-describedby="o-name-err">
+          <p class="err" id="o-name-err"></p>
+        </div>
+        <div class="field">
+          <label for="o-contact">Телефон, e-mail или @ник в Telegram</label>
+          <input id="o-contact" name="contact" type="text" autocomplete="tel" maxlength="80" aria-describedby="o-contact-err">
+          <p class="err" id="o-contact-err"></p>
+        </div>
+        <div class="field">
+          <label for="o-service">Услуга</label>
+          <select id="o-service" name="service"></select>
+        </div>
+        <div class="field">
+          <label for="o-comment">Комментарий <span class="hint">(по желанию)</span></label>
+          <textarea id="o-comment" name="comment" rows="3" maxlength="500" placeholder="Например: удобно в субботу утром, дома есть кот"></textarea>
+        </div>
+        <p class="o-summary" id="o-summary"></p>
+        <div class="field check">
+          <input id="o-consent" name="consent" type="checkbox" aria-describedby="o-consent-err">
+          <label for="o-consent">Согласен на обработку данных для ответа на заявку. <a href="privacy.html">Политика конфиденциальности</a></label>
+          <p class="err" id="o-consent-err"></p>
+        </div>
+        <button class="btn btn-lime btn-wide" type="submit">Отправить заявку</button>
+        <p class="o-status" id="o-status" role="alert"></p>
+      </form>
+      <div class="done" id="orderDone" tabindex="-1" hidden>
+        <h3 id="done-title"></h3>
+        <p id="done-text"></p>
+        <button class="btn btn-line" type="button" id="done-edit">Изменить данные</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="ftr">
+  <div class="wrap ftr-grid">
+    <div>
+      <a class="logo" href="#top"><span class="logo-mark" aria-hidden="true"></span>nord<span>clean</span></a>
+      <p class="ftr-tag">Уборка квартир, домов и офисов. Химчистка мебели и ковров.</p>
+    </div>
+    <nav class="ftr-nav" aria-label="Навигация в подвале">
+      <a href="#services">Услуги</a><a href="#calc">Цены</a><a href="#results">До и после</a><a href="#faq">Вопросы</a><a href="privacy.html">Конфиденциальность</a>
+    </nav>
+    <div class="ftr-contacts"><a data-site="phone" href="#"></a><a data-site="email" href="#"></a></div>
+  </div>
+  <div class="wrap ftr-demo">
+    <p>Компания Nord Clean вымышленная, а сайт сделан как демонстрационный проект для портфолио: цены, контакты и условия условные, заявки никуда не отправляются. © <span id="year">2026</span></p>
+  </div>
+</footer>
+
+</body>
+</html>
